@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/creastat/infra/telemetry"
+	"github.com/madmike/go-infra/telemetry"
 )
 
 // Recovery recovers from panics and logs them

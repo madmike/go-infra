@@ -172,7 +172,8 @@ func New(config Config) Logger {
 
 	// Add caller information if enabled
 	if config.EnableCaller {
-		logger = logger.With().Caller().Logger()
+		// Skip frames to show the actual caller, taking into account our wrapper
+		logger = logger.With().CallerWithSkipFrameCount(zerolog.CallerSkipFrameCount + 1).Logger()
 	}
 
 	// Add environment if provided

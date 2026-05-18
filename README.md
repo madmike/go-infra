@@ -2,7 +2,7 @@
 
 The `infra` library provides foundational utilities and middleware for building Go services. It includes logging, observability, HTTP middleware, and configuration management.
 
-**Module**: `github.com/creastat/infra`
+**Module**: `github.com/madmike/go-infra`
 
 ## 📦 Components
 
@@ -18,7 +18,7 @@ Observability and telemetry utilities with structured logging.
 
 **Usage**:
 ```go
-import "github.com/creastat/infra/telemetry"
+import "github.com/madmike/go-infra/telemetry"
 
 logger := telemetry.New(telemetry.Config{
     Level: "debug",
@@ -47,7 +47,7 @@ HTTP middleware utilities.
 
 **Usage**:
 ```go
-import "github.com/creastat/infra/middleware"
+import "github.com/madmike/go-infra/middleware"
 
 // CORS middleware
 corsMiddleware := middleware.NewCORSMiddleware(middleware.CORSConfig{
@@ -72,7 +72,7 @@ HTTP utilities for error handling and responses.
 
 **Usage**:
 ```go
-import "github.com/creastat/infra/http"
+import "github.com/madmike/go-infra/http"
 
 // Error response
 http.Error(w, "Not found", http.StatusNotFound)
@@ -91,7 +91,7 @@ Configuration management utilities.
 
 **Usage**:
 ```go
-import "github.com/creastat/infra/config"
+import "github.com/madmike/go-infra/config"
 
 cfg := config.Load("config.yaml")
 ```
@@ -108,7 +108,7 @@ Shared type definitions.
 ### Installation
 
 ```bash
-go get github.com/creastat/infra@latest
+go get github.com/madmike/go-infra@latest
 ```
 
 ### Basic Setup
@@ -117,8 +117,8 @@ go get github.com/creastat/infra@latest
 package main
 
 import (
-    "github.com/creastat/infra/telemetry"
-    "github.com/creastat/infra/middleware"
+    "github.com/madmike/go-infra/telemetry"
+    "github.com/madmike/go-infra/middleware"
     "net/http"
 )
 

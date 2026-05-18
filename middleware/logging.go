@@ -1,11 +1,14 @@
 package middleware
 
 import (
+	"bufio"
+	"fmt"
+	"net"
 	"net/http"
 	"time"
 
-	"github.com/creastat/infra/telemetry"
 	"github.com/google/uuid"
+	"github.com/madmike/go-infra/telemetry"
 )
 
 // RequestLogger logs HTTP requests
@@ -48,4 +51,11 @@ type responseWriter struct {
 func (rw *responseWriter) WriteHeader(code int) {
 	rw.statusCode = code
 	rw.ResponseWriter.WriteHeader(code)
+}
+
+func (rw *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	if h, ok := rw.ResponseWriter.(http.Hijacker); ok {
+		return h.Hijack()
+	}
+	return nil, nil, fmt.Errorf("http.Hijacker not implemented")
 }

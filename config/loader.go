@@ -66,14 +66,17 @@ func (l *Loader) loadFromFile(config any) error {
 		return fmt.Errorf("failed to read config file: %w", err)
 	}
 
+	// Expand environment variables in the file content before parsing
+	expandedData := l.expandEnvVar(string(data))
+
 	ext := strings.ToLower(filepath.Ext(l.configPath))
 	switch ext {
 	case ".yaml", ".yml":
-		if err := yaml.Unmarshal(data, config); err != nil {
+		if err := yaml.Unmarshal([]byte(expandedData), config); err != nil {
 			return fmt.Errorf("failed to parse YAML config: %w", err)
 		}
 	case ".json":
-		if err := json.Unmarshal(data, config); err != nil {
+		if err := json.Unmarshal([]byte(expandedData), config); err != nil {
 			return fmt.Errorf("failed to parse JSON config: %w", err)
 		}
 	default:

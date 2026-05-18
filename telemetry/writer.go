@@ -66,6 +66,18 @@ func (w *ModuleConsoleWriter) Write(p []byte) (n int, err error) {
 		Out:        &buf,
 		TimeFormat: w.TimeFormat,
 		NoColor:    w.NoColor,
+		FormatCaller: func(i any) string {
+			var c string
+			if cc, ok := i.(string); ok {
+				c = cc
+			}
+			if len(c) > 0 {
+				if parts := strings.Split(c, "/"); len(parts) > 0 {
+					c = parts[len(parts)-1]
+				}
+			}
+			return c
+		},
 	}
 
 	// Write the modified event to buffer
