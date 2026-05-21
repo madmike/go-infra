@@ -10,7 +10,7 @@ import (
 )
 
 // JWTAuth returns a gin.HandlerFunc that validates a JWT token.
-// It extracts "tid" (tenant_id) and "sub" (user_id) from the claims
+// It extracts "tenant_id" / "tid" and "sub" (user_id) from the claims
 // and sets them in the gin context.
 func JWTAuth(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -46,7 +46,10 @@ func JWTAuth(secret string) gin.HandlerFunc {
 		}
 
 		// Extract tenant_id and user_id/sub
-		if tid, ok := claims["tid"].(string); ok {
+		if tid, ok := claims["tenant_id"].(string); ok && tid != "" {
+			c.Set("tenant_id", tid)
+		}
+		if tid, ok := claims["tid"].(string); ok && tid != "" {
 			c.Set("tenant_id", tid)
 		}
 		if sub, ok := claims["sub"].(string); ok {
@@ -121,7 +124,10 @@ func ServiceAuth(secret string, requiredScopes ...string) gin.HandlerFunc {
 		if sub, ok := claims["sub"].(string); ok {
 			c.Set("service_name", sub)
 		}
-		if tid, ok := claims["tid"].(string); ok {
+		if tid, ok := claims["tenant_id"].(string); ok && tid != "" {
+			c.Set("tenant_id", tid)
+		}
+		if tid, ok := claims["tid"].(string); ok && tid != "" {
 			c.Set("tenant_id", tid)
 		}
 

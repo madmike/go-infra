@@ -28,16 +28,24 @@ func RequestLogger(logger telemetry.Logger) func(http.Handler) http.Handler {
 			// Call next handler
 			next.ServeHTTP(wrapped, r)
 
-			// Log request
+			// Log request with severity based on status.
 			duration := time.Since(start)
-			logger.Info("HTTP request",
+			fields := []telemetry.Field{
 				telemetry.String("method", r.Method),
 				telemetry.String("path", r.URL.Path),
 				telemetry.String("request_id", requestID),
 				telemetry.Int("status", wrapped.statusCode),
 				telemetry.Duration("duration", duration),
 				telemetry.String("remote_addr", r.RemoteAddr),
-			)
+			}
+			switch {
+			case wrapped.statusCode >= 500:
+				logger.Error("HTTP request", fields...)
+			case wrapped.statusCode >= 400:
+				logger.Warn("HTTP request", fields...)
+			default:
+				logger.Info("HTTP request", fields...)
+			}
 		})
 	}
 }

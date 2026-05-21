@@ -30,25 +30,34 @@ func GinLogger(logger telemetry.Logger) gin.HandlerFunc {
 		end := time.Now()
 		latency := end.Sub(start)
 
-		if len(c.Errors) > 0 {
-			for _, e := range c.Errors.Errors() {
-				logger.Error(e,
-					telemetry.String("path", path),
-					telemetry.String("query", query),
-					telemetry.String("request_id", requestID),
-				)
+		fields := []telemetry.Field{
+			telemetry.Int("status", c.Writer.Status()),
+			telemetry.String("method", c.Request.Method),
+			telemetry.String("path", path),
+			telemetry.String("query", query),
+			telemetry.String("ip", c.ClientIP()),
+			telemetry.String("user_agent", c.Request.UserAgent()),
+			telemetry.Duration("latency", latency),
+			telemetry.String("request_id", requestID),
+		}
+		switch {
+		case c.Writer.Status() >= 500:
+			if len(c.Errors) > 0 {
+				for _, e := range c.Errors.Errors() {
+					logger.Error(e, append(fields, telemetry.String("error", e))...)
+				}
+			} else {
+				logger.Error("HTTP Request", fields...)
 			}
-		} else {
-			fields := []telemetry.Field{
-				telemetry.Int("status", c.Writer.Status()),
-				telemetry.String("method", c.Request.Method),
-				telemetry.String("path", path),
-				telemetry.String("query", query),
-				telemetry.String("ip", c.ClientIP()),
-				telemetry.String("user_agent", c.Request.UserAgent()),
-				telemetry.Duration("latency", latency),
-				telemetry.String("request_id", requestID),
+		case c.Writer.Status() >= 400:
+			if len(c.Errors) > 0 {
+				for _, e := range c.Errors.Errors() {
+					logger.Warn(e, append(fields, telemetry.String("error", e))...)
+				}
+			} else {
+				logger.Warn("HTTP Request", fields...)
 			}
+		default:
 			logger.Info("HTTP Request", fields...)
 		}
 	}
