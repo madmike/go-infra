@@ -26,6 +26,11 @@ func GinLogger(logger telemetry.Logger) gin.HandlerFunc {
 		// Process request
 		c.Next()
 
+		// Skip logging for successful health checks to prevent log spam
+		if (path == "/health" || path == "/healthz") && c.Writer.Status() < 400 {
+			return
+		}
+
 		// Log request
 		end := time.Now()
 		latency := end.Sub(start)

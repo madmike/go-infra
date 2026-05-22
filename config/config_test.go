@@ -10,13 +10,13 @@ import (
 
 // TestConfig is a test struct for loader tests.
 type TestConfig struct {
-	AppName    string        `env:"APP_NAME"`
-	Port       int           `env:"PORT"`
-	Debug      bool          `env:"DEBUG"`
-	Timeout    time.Duration `env:"TIMEOUT"`
-	Database   DBConfig      `env:"DB_"`
-	LogLevel   string        // Uses field name by default
-	SkipField  string        `env:"-"`
+	AppName   string        `env:"APP_NAME"`
+	Port      int           `env:"PORT"`
+	Debug     bool          `env:"DEBUG"`
+	Timeout   time.Duration `env:"TIMEOUT"`
+	Database  DBConfig      `env:"DB_"`
+	LogLevel  string        // Uses field name by default
+	SkipField string        `env:"-"`
 }
 
 type DBConfig struct {
@@ -55,23 +55,23 @@ func TestLoaderLoadFromEnv(t *testing.T) {
 
 // TestLoaderNestedStruct loads nested struct fields.
 func TestLoaderNestedStruct(t *testing.T) {
-	oldHost := os.Getenv("TEST_DB_HOST")
-	oldPort := os.Getenv("TEST_DB_PORT")
+	oldHost := os.Getenv("TEST_DB__HOST")
+	oldPort := os.Getenv("TEST_DB__PORT")
 	defer func() {
 		if oldHost != "" {
-			os.Setenv("TEST_DB_HOST", oldHost)
+			os.Setenv("TEST_DB__HOST", oldHost)
 		} else {
-			os.Unsetenv("TEST_DB_HOST")
+			os.Unsetenv("TEST_DB__HOST")
 		}
 		if oldPort != "" {
-			os.Setenv("TEST_DB_PORT", oldPort)
+			os.Setenv("TEST_DB__PORT", oldPort)
 		} else {
-			os.Unsetenv("TEST_DB_PORT")
+			os.Unsetenv("TEST_DB__PORT")
 		}
 	}()
 
-	os.Setenv("TEST_DB_HOST", "localhost")
-	os.Setenv("TEST_DB_PORT", "5432")
+	os.Setenv("TEST_DB__HOST", "localhost")
+	os.Setenv("TEST_DB__PORT", "5432")
 
 	cfg := &TestConfig{}
 	loader := NewLoader("", "TEST_")
@@ -214,16 +214,16 @@ func TestNewLoader(t *testing.T) {
 
 // TestLoaderEmptyPrefix uses no prefix.
 func TestLoaderEmptyPrefix(t *testing.T) {
-	oldName := os.Getenv("APPNAME")
+	oldName := os.Getenv("APP_NAME")
 	defer func() {
 		if oldName != "" {
-			os.Setenv("APPNAME", oldName)
+			os.Setenv("APP_NAME", oldName)
 		} else {
-			os.Unsetenv("APPNAME")
+			os.Unsetenv("APP_NAME")
 		}
 	}()
 
-	os.Setenv("APPNAME", "testapp")
+	os.Setenv("APP_NAME", "testapp")
 
 	cfg := &TestConfig{}
 	loader := NewLoader("", "")

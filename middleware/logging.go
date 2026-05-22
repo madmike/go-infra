@@ -28,6 +28,11 @@ func RequestLogger(logger telemetry.Logger) func(http.Handler) http.Handler {
 			// Call next handler
 			next.ServeHTTP(wrapped, r)
 
+			// Skip logging for successful health checks to prevent log spam
+			if (r.URL.Path == "/health" || r.URL.Path == "/healthz") && wrapped.statusCode < 400 {
+				return
+			}
+
 			// Log request with severity based on status.
 			duration := time.Since(start)
 			fields := []telemetry.Field{
